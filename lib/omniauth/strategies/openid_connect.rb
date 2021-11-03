@@ -55,6 +55,7 @@ module OmniAuth
       option :client_auth_method
       option :post_logout_redirect_uri
       option :extra_authorize_params, {}
+      option :allow_authorize_params, []
       option :uid_field, 'sub'
       option :pkce, false
       option :pkce_verifier, nil
@@ -187,6 +188,10 @@ module OmniAuth
         if options.pkce
           opts.merge!(pkce_authorize_params)
           session["omniauth.pkce.verifier"] = options.pkce_verifier
+        end
+
+        options.allow_authorize_params.each do |key|
+          opts[key] = request.params[key.to_s] unless opts.key?(key)
         end
 
         client.authorization_uri(opts.reject { |_k, v| v.nil? })
